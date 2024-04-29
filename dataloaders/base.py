@@ -1,5 +1,5 @@
 import torchvision
-from torchvision import transforms
+from torchvision import transforms, datasets
 from .wrapper import CacheClassLabel
 
 def MNIST(dataroot, train_aug=False):
@@ -106,3 +106,27 @@ def CIFAR100(dataroot, train_aug=False):
 
     return train_dataset, val_dataset
 
+
+def ZXJ_GD(dataroot, train_aug=False):
+    normalize = transforms.Normalize(mean=[0.507, 0.487, 0.441], std=[0.267, 0.256, 0.276])
+
+    val_transform = transforms.Compose([
+        transforms.ToTensor(),
+        normalize,
+    ])
+    train_transform = val_transform
+    if train_aug:
+        train_transform = transforms.Compose([
+            transforms.RandomCrop(32, padding=4),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            normalize,
+        ])
+
+    train_dataset = datasets.ImageFolder(root=dataroot, transform=train_transform)
+    train_dataset = CacheClassLabel(train_dataset)
+
+    val_dataset = datasets.ImageFolder(root=dataroot, transform=val_transform)
+    val_dataset = CacheClassLabel(val_dataset)
+
+    return train_dataset, val_dataset

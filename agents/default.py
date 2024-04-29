@@ -65,8 +65,8 @@ class NormalNN(nn.Module):
         # The output of the model will be a dict: {task_name1:output1, task_name2:output2 ...}
         # For a single-headed model the output will be {'All':output}
         model.last = nn.ModuleDict()
-        for task,out_dim in cfg['out_dim'].items():
-            model.last[task] = nn.Linear(n_feat,out_dim)
+        for task, out_dim in cfg['out_dim'].items():
+            model.last[task] = nn.Linear(n_feat, out_dim)
 
         # Redefine the task-dependent function
         def new_logits(self, x):
@@ -128,7 +128,7 @@ class NormalNN(nn.Module):
         # The criterion will match the head and task to calculate the loss.
         if self.multihead:
             loss = 0
-            for t,t_preds in preds.items():
+            for t, t_preds in preds.items():
                 inds = [i for i in range(len(tasks)) if tasks[i]==t]  # The index of inputs that matched specific task
                 if len(inds)>0:
                     t_preds = t_preds[inds]
@@ -166,7 +166,6 @@ class NormalNN(nn.Module):
             # Config the model and optimizer
             self.log('Epoch:{0}'.format(epoch))
             self.model.train()
-            self.scheduler.step(epoch)
             for param_group in self.optimizer.param_groups:
                 self.log('LR:',param_group['lr'])
 
@@ -185,6 +184,7 @@ class NormalNN(nn.Module):
                 loss, output = self.update_model(input, target, task)
                 input = input.detach()
                 target = target.detach()
+                self.scheduler.step()
 
                 # measure accuracy and record loss
                 acc = accumulate_acc(output, target, task, acc)

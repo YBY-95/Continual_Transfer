@@ -15,6 +15,7 @@ def run(args):
         os.mkdir('outputs')
 
     # Prepare dataloaders
+    # 这样写蛮有意思的，在这里用的很频繁，这样就可以用传入的参数来选择相应的函数了
     train_dataset, val_dataset = dataloaders.base.__dict__[args.dataset](args.dataroot, args.train_aug)
     if args.n_permutation>0:
         train_dataset_splits, val_dataset_splits, task_output_space = PermutedGen(train_dataset, val_dataset,
@@ -36,11 +37,11 @@ def run(args):
                     'reg_coef':args.reg_coef}
     agent = agents.__dict__[args.agent_type].__dict__[args.agent_name](agent_config)
     print(agent.model)
-    print('#parameter of model:',agent.count_parameter())
+    print('#parameter of model:', agent.count_parameter())
 
     # Decide split ordering
     task_names = sorted(list(task_output_space.keys()), key=int)
-    print('Task order:',task_names)
+    print('Task order:', task_names)
     if args.rand_split_order:
         shuffle(task_names)
         print('Shuffled task order:', task_names)
@@ -64,7 +65,7 @@ def run(args):
         # Feed data to agent and evaluate agent's performance
         for i in range(len(task_names)):
             train_name = task_names[i]
-            print('======================',train_name,'=======================')
+            print('======================', train_name, '=======================')
             train_loader = torch.utils.data.DataLoader(train_dataset_splits[train_name],
                                                         batch_size=args.batch_size, shuffle=True, num_workers=args.workers)
             val_loader = torch.utils.data.DataLoader(val_dataset_splits[train_name],
@@ -96,15 +97,15 @@ def get_args(argv):
                         help="The list of gpuid, ex:--gpuid 3 1. Negative value means cpu-only")
     parser.add_argument('--model_type', type=str, default='mlp', help="The type (mlp|lenet|vgg|resnet) of backbone network")
     parser.add_argument('--model_name', type=str, default='MLP', help="The name of actual model for the backbone")
-    parser.add_argument('--force_out_dim', type=int, default=2, help="Set 0 to let the task decide the required output dimension")
+    parser.add_argument('--force_out_dim', type=int, default=4, help="Set 0 to let the task decide the required output dimension")
     parser.add_argument('--agent_type', type=str, default='default', help="The type (filename) of agent")
     parser.add_argument('--agent_name', type=str, default='NormalNN', help="The class name of agent")
     parser.add_argument('--optimizer', type=str, default='SGD', help="SGD|Adam|RMSprop|amsgrad|Adadelta|Adagrad|Adamax ...")
     parser.add_argument('--dataroot', type=str, default='data', help="The root folder of dataset or downloaded data")
     parser.add_argument('--dataset', type=str, default='MNIST', help="MNIST(default)|CIFAR10|CIFAR100")
-    parser.add_argument('--n_permutation', type=int, default=0, help="Enable permuted tests when >0")
-    parser.add_argument('--first_split_size', type=int, default=2)
-    parser.add_argument('--other_split_size', type=int, default=2)
+    parser.add_argument('--n_permutation', type=int, default=10, help="Enable permuted tests when >0")
+    parser.add_argument('--first_split_size', type=int, default=4)
+    parser.add_argument('--other_split_size', type=int, default=4)
     parser.add_argument('--no_class_remap', dest='no_class_remap', default=False, action='store_true',
                         help="Avoid the dataset with a subset of classes doing the remapping. Ex: [2,5,6 ...] -> [0,1,2 ...]")
     parser.add_argument('--train_aug', dest='train_aug', default=False, action='store_true',
@@ -118,7 +119,7 @@ def get_args(argv):
     parser.add_argument('--lr', type=float, default=0.01, help="Learning rate")
     parser.add_argument('--momentum', type=float, default=0)
     parser.add_argument('--weight_decay', type=float, default=0)
-    parser.add_argument('--schedule', nargs="+", type=int, default=[2],
+    parser.add_argument('--schedule', nargs="+", type=int, default=[20],
                         help="The list of epoch numbers to reduce learning rate by factor of 0.1. Last number is the end epoch")
     parser.add_argument('--print_freq', type=float, default=100, help="Print the log at every x iteration")
     parser.add_argument('--model_weights', type=str, default=None,
@@ -136,6 +137,10 @@ def get_args(argv):
 
 if __name__ == '__main__':
     args = get_args(sys.argv[1:])
+    setattr(args, 'dataset', 'ZXJ_GD')
+    setattr(args, 'dataroot', r'D:\DATABASE\ZXJ_GD\var_speed_sample\Continual_Learning\stable')
+    setattr(args, 'no_class_remap', False)
+    setattr(args, 'n_permutation', 0)
     reg_coef_list = args.reg_coef
     avg_final_acc = {}
 

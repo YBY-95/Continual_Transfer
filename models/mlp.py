@@ -4,7 +4,7 @@ import torch.nn as nn
 
 class MLP(nn.Module):
 
-    def __init__(self, out_dim=10, in_channel=1, img_sz=32, hidden_dim=256):
+    def __init__(self, out_dim=4, in_channel=3, img_sz=128, hidden_dim=256):
         super(MLP, self).__init__()
         self.in_dim = in_channel*img_sz*img_sz
         self.linear = nn.Sequential(
@@ -18,7 +18,7 @@ class MLP(nn.Module):
         self.last = nn.Linear(hidden_dim, out_dim)  # Subject to be replaced dependent on task
 
     def features(self, x):
-        x = self.linear(x.view(-1,self.in_dim))
+        x = self.linear(x.view(-1, self.in_dim))
         return x
 
     def logits(self, x):
