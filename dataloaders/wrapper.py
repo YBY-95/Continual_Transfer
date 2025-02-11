@@ -27,6 +27,8 @@ class CacheClassLabel(data.Dataset):
         img,target = self.dataset[index]
         return img, target
 
+    def label_replace(self, pseudo_labels):
+        self.labels = pseudo_labels[:, 0]
 
 class AppendName(data.Dataset):
     """

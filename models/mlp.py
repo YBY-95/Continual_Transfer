@@ -6,6 +6,7 @@ class MLP(nn.Module):
 
     def __init__(self, out_dim=4, in_channel=3, img_sz=128, hidden_dim=256):
         super(MLP, self).__init__()
+        self.hidden_dim = hidden_dim
         self.in_dim = in_channel*img_sz*img_sz
         self.linear = nn.Sequential(
             nn.Linear(self.in_dim, hidden_dim),
@@ -29,6 +30,9 @@ class MLP(nn.Module):
         x = self.features(x)
         x = self.logits(x)
         return x
+
+    def output_num(self):
+        return self.hidden_dim
 
 
 def MLP100():

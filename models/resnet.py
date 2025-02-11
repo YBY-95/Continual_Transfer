@@ -69,6 +69,7 @@ class PreActResNet(nn.Module):
         super(PreActResNet, self).__init__()
         self.in_planes = 64
         last_planes = 512*block.expansion
+        self.last_planes = last_planes
 
         self.conv1 = conv3x3(in_channels, 64)
         self.stage1 = self._make_layer(block, 64, num_blocks[0], stride=1)
@@ -104,6 +105,9 @@ class PreActResNet(nn.Module):
         x = F.adaptive_avg_pool2d(x, 1)
         x = self.logits(x.view(x.size(0), -1))
         return x
+
+    def output_num(self):
+        return self.last_planes*32*32
 
 
 class PreActResNet_cifar(nn.Module):
@@ -208,3 +212,6 @@ def ResNet101(out_dim=10):
 
 def ResNet152(out_dim=10):
     return PreActResNet(PreActBottleneck, [3,8,36,3], num_classes=out_dim)
+
+def ResNet_Transfer10(out_dim=4):
+    return PreActResNet(PreActBlock, [1,1,1,1], num_classes=out_dim)

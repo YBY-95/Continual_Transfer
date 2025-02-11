@@ -29,12 +29,13 @@ def run(args):
                                                                           remap_class=not args.no_class_remap)
 
     # Prepare the Agent (model)
-    agent_config = {'lr': args.lr, 'momentum': args.momentum, 'weight_decay': args.weight_decay,'schedule': args.schedule,
-                    'model_type':args.model_type, 'model_name': args.model_name, 'model_weights':args.model_weights,
-                    'out_dim':{'All':args.force_out_dim} if args.force_out_dim>0 else task_output_space,
-                    'optimizer':args.optimizer,
-                    'print_freq':args.print_freq, 'gpuid': args.gpuid,
-                    'reg_coef':args.reg_coef}
+    agent_config = {'lr': args.lr, 'momentum': args.momentum, 'weight_decay': args.weight_decay, 'schedule': args.schedule,
+                    'model_type': args.model_type, 'model_name': args.model_name, 'model_weights':args.model_weights,
+                    'out_dim': {'All': args.force_out_dim} if args.force_out_dim>0 else task_output_space,
+                    'optimizer': args.optimizer,
+                    'print_freq': args.print_freq, 'gpuid': args.gpuid,
+                    'reg_coef': args.reg_coef,
+                    'transfer_learning': args.transfer_learning}
     agent = agents.__dict__[args.agent_type].__dict__[args.agent_name](agent_config)
     print(agent.model)
     print('#parameter of model:', agent.count_parameter())
@@ -132,6 +133,7 @@ def get_args(argv):
     parser.add_argument('--repeat', type=int, default=1, help="Repeat the experiment N times")
     parser.add_argument('--incremental_class', dest='incremental_class', default=False, action='store_true',
                         help="The number of output node in the single-headed model increases along with new categories.")
+    parser.add_argument('--transfer_learning', default=False, action='store_true')
     args = parser.parse_args(argv)
     return args
 
@@ -141,6 +143,7 @@ if __name__ == '__main__':
     setattr(args, 'dataroot', r'D:\DATABASE\ZXJ_GD\var_speed_sample\Continual_Learning\stable')
     setattr(args, 'no_class_remap', False)
     setattr(args, 'n_permutation', 0)
+    setattr(args, 'agent_type', )
     reg_coef_list = args.reg_coef
     avg_final_acc = {}
 

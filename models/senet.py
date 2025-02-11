@@ -123,3 +123,5 @@ def SE_ResNet101(out_dim=10):
 def SE_ResNet152(out_dim=10):
     return PreActResNet(SE_PreActBottleneck, [3,8,36,3], num_classes=out_dim)
 
+def SE_ResNet_Transfer10(out_dim=4):
+    return PreActResNet(SE_PreActBottleneck, [1,1,1,1], num_classes=out_dim)

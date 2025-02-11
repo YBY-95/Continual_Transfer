@@ -15,13 +15,13 @@ def SplitGen(train_dataset, val_dataset, first_split_sz=2, other_split_sz=2, ran
     :param remap_class: (bool) Ex: remap classes in a split from [2,4,6 ...] to [0,1,2 ...]
     :return: train_loaders {task_name:loader}, val_loaders {task_name:loader}, out_dim {task_name:num_classes}
     '''
-    assert train_dataset.number_classes==val_dataset.number_classes,'Train/Val has different number of classes'
+    assert train_dataset.number_classes == val_dataset.number_classes, 'Train/Val has different number of classes'
     num_classes = train_dataset.number_classes
 
     # Calculate the boundary index of classes for splits
     # Ex: [0,2,4,6,8,10] or [0,50,60,70,80,90,100]
     split_boundaries = [0, first_split_sz]
-    while split_boundaries[-1]<num_classes:
+    while split_boundaries[-1] < num_classes:
         split_boundaries.append(split_boundaries[-1]+other_split_sz)
     print('split_boundaries:', split_boundaries)
     assert split_boundaries[-1]==num_classes,'Invalid split size'
@@ -69,6 +69,3 @@ def PermutedGen(train_dataset, val_dataset, n_permute, remap_class=False):
         task_output_space[name] = train_dataset.number_classes
 
     return train_datasets, val_datasets, task_output_space
-
-
-# def TransferDomainGen(train_dataset,):
